@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import TodoItem from './todoItem';
 
 // 定义一个React组件
 class TodoList extends Component {
+  // 父组件通过属性向子组件传递参数
+  // 子组件通过props接受父组件传递过来的参数
   constructor(props){
     // 组件的构造函数 组件创建时，constructor函数自动被执行
     super(props); // 初始化
@@ -9,6 +12,10 @@ class TodoList extends Component {
       list:[],
       inputValue:''
     }
+
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleBtnClick = this.handleBtnClick.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
   handleBtnClick() {
     this.setState({
@@ -21,12 +28,33 @@ class TodoList extends Component {
       inputValue:e.target.value
     })
   }
-  handleItemClick(index){
-    const list = [...this.state.list]; // 复制一个list的副本，避免直接修改原数据
+  // handleItemClick(index){
+  //   const list = [...this.state.list]; // 复制一个list的副本，避免直接修改原数据
+  //   list.splice(index,1);
+  //   this.setState({list})
+  // }
+
+  handleDelete(index){
+    // console.log('index:',index)
+    const list = [...this.state.list];
     list.splice(index,1);
-    this.setState({
-      list,
-    })
+    this.setState({list});
+  }
+
+  getTodoItems(){
+      return (
+        this.state.list.map((item,index) => {
+          return (
+            <TodoItem 
+              delete = {this.handleDelete} 
+              key={index} 
+              content={item} 
+              index={index}
+            />
+          );
+          // return <li key={index} onClick={this.handleItemClick.bind(this,index)}>{item}</li>
+        })
+      )
   }
 
   render() {
@@ -36,16 +64,10 @@ class TodoList extends Component {
         <div>
           {/* js表达式  */}
           {/* {1 + 2 } */}
-          <input value={this.state.inputValue} onChange={this.handleInputChange.bind(this)}/>
-          <button onClick={this.handleBtnClick.bind(this)}>add</button>
+          <input value={this.state.inputValue} onChange={this.handleInputChange}/>
+          <button onClick={this.handleBtnClick}>add</button>
         </div>
-        <ul>
-          {
-            this.state.list.map((item,index) => {
-              return <li key={index} onClick={this.handleItemClick.bind(this,index)}>{item}</li>
-            })
-          }
-        </ul>
+        <ul>{this.getTodoItems()}</ul>
       </div>
     );
   }
